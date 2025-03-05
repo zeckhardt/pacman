@@ -42,10 +42,10 @@ class Vector2(object):
     def copy(self):
         return Vector2(self.x, self.y)
     
-    def asTuple(self):
+    def as_tuple(self):
         return self.x, self.y
     
-    def asInt(self):
+    def as_int(self):
         return int(self.x), int(self.y)
     
     def __str__(self):

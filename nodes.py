@@ -10,10 +10,10 @@ class Node(object):
     def render(self, screen):
         for n in self.neighbors.keys():
             if self.neighbors[n] is not None:
-                line_start = self.position.asTuple()
-                line_end = self.neighbors[n].position.asTuple()
+                line_start = self.position.as_tuple()
+                line_end = self.neighbors[n].position.as_tuple()
                 pygame.draw.line(screen, WHITE, line_start, line_end, 4)
-                pygame.draw.circle(screen, RED, self.position.asInt(), 12)
+                pygame.draw.circle(screen, RED, self.position.as_int(), 12)
                 
 
 class NodeGroup(object):

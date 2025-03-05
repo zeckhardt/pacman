@@ -11,24 +11,24 @@ class GameController(object):
         self.background = None
         self.clock = pygame.time.Clock()
 
-    def setBackground(self):
+    def set_background(self):
         self.background = pygame.surface.Surface(SCREENSIZE).convert()
         self.background.fill(BLACK)
         
-    def startGame(self):
-        self.setBackground()
+    def start_game(self):
+        self.set_background()
         self.nodes = NodeGroup()
-        self.nodes.setupTestNodes()
-        self.pacman = Pacman(self.nodes.nodeList[0])
+        self.nodes.setup_test_nodes()
+        self.pacman = Pacman(self.nodes.node_list[0])
     
     def update(self):
         # amount of time since last update() call
         dt = self.clock.tick(30) / 1000.0
         self.pacman.update(dt)
-        self.checkEvents()
+        self.check_events()
         self.render()
 
-    def checkEvents(self):
+    def check_events(self):
         # exit the game
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -43,6 +43,6 @@ class GameController(object):
 
 if __name__ == '__main__':
     game = GameController()
-    game.startGame()
+    game.start_game()
     while True:
         game.update()

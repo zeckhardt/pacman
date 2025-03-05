@@ -7,69 +7,69 @@ class Pacman(object):
     def __init__(self, node):
         self.name = PACMAN
         self.directions = {STOP: Vector2(), UP: Vector2(0,-1), DOWN: Vector2(0,1),
-                           LEFT:Vector2(-1,0), RIGHT:Vector2(1,0)}
+                           LEFT: Vector2(-1,0), RIGHT: Vector2(1,0)}
         self.direction = STOP
-        self.speed = 100 * TILEWIDTH/16
+        self.speed = 100 * TILE_WIDTH / 16
         self.radius = 10
         self.color = YELLOW
         self.node = node
-        self.setPosition()
+        self.set_position()
         self.target = node
         
-    def setPosition(self):
+    def set_position(self):
         self.position = self.node.position.copy()
         
     def update(self, dt):
         self.position += self.directions[self.direction] * self.speed * dt
-        direction = self.getValidKey()
-        if self.overshotTarget():
+        direction = self.get_valid_key()
+        if self.overshot_target():
             self.node = self.target
-            self.target = self.getNewTarget(direction)
+            self.target = self.get_new_target(direction)
             if self.target is not self.node:
                 self.direction = direction
             else:
-                self.target = self.getNewTarget(self.direction)
+                self.target = self.get_new_target(self.direction)
             
             if self.target is self.node:
                 self.direction = STOP
-            self.setPosition()
+            self.set_position()
         else:
-            if self.oppositeDirection(direction):
-                self.reverseDirection()
+            if self.opposite_direction(direction):
+                self.reverse_direction()
             
-    def validDirection(self, direction):
+    def valid_direction(self, direction):
         if direction is not STOP:
             if self.node.neighbors[direction] is not None:
                 return True
         return False
     
-    def getNewTarget(self, direction):
-        if self.validDirection(direction):
+    def get_new_target(self, direction):
+        if self.valid_direction(direction):
             return self.node.neighbors[direction]
         return self.node
     
-    def overshotTarget(self):
+    def overshot_target(self):
         if self.target is not None:
             vec1 = self.target.position - self.node.position
             vec2 = self.position - self.node.position
-            node2Target = vec1.magnitudeSquared()
-            node2Self = vec2.magnitudeSquared()
-            return node2Self >= node2Target
+            node_to_target = vec1.magnitude_squared()
+            node_to_self = vec2.magnitude_squared()
+            return node_to_self >= node_to_target
         return False
     
-    def reverseDirection(self):
+    def reverse_direction(self):
         self.direction *= -1
         temp = self.node
         self.node = self.target
         self.target = temp
         
-    def oppositeDirection(self, direction):
+    def opposite_direction(self, direction):
         if direction is not STOP:
             if direction == self.direction * -1:
                 return True
         return False
     
-    def getValidKey(self):
+    def get_valid_key(self):
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
             return UP

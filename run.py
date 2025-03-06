@@ -3,6 +3,7 @@ from pygame.locals import *
 from constants import *
 from pacman import Pacman
 from nodes import NodeGroup
+from petllets import PelletGroup
 
 class GameController(object):
     def __init__(self):
@@ -17,14 +18,17 @@ class GameController(object):
         
     def start_game(self):
         self.set_background()
-        self.nodes = NodeGroup()
-        self.nodes.setup_test_nodes()
-        self.pacman = Pacman(self.nodes.node_list[0])
+        self.nodes = NodeGroup("maze1.txt")
+        self.nodes.set_portal_pair((0,17), (27,17))
+        self.pacman = Pacman(self.nodes.get_start_node_temp())
+        self.pellets = PelletGroup("maze1.txt")
     
     def update(self):
         # amount of time since last update() call
         dt = self.clock.tick(30) / 1000.0
         self.pacman.update(dt)
+        self.pellets.update(dt)
+        self.check_pellet_events()
         self.check_events()
         self.render()
 
@@ -33,10 +37,17 @@ class GameController(object):
         for event in pygame.event.get():
             if event.type == QUIT:
                 exit()
+                
+    def check_pellet_events(self):
+        pellet = self.pacman.eat_pellets(self.pellets.pellet_list)
+        if pellet:
+            self.pellets.num_eaten += 1
+            self.pellets.pellet_list.remove(pellet)
 
     def render(self):
         self.screen.blit(self.background, (0,0))
         self.nodes.render(self.screen)
+        self.pellets.render(self.screen)
         self.pacman.render(self.screen)
         pygame.display.update()
 

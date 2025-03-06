@@ -32,7 +32,7 @@ class PowerPellet(Pellet):
         self.timer += dt
         if self.timer >= self.flash_time:
             self.visible = not self.visible
-            self.timer
+            self.timer = 0
             
 class PelletGroup(object):
     def __init__(self, pelletfile):

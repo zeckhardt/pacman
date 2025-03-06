@@ -2,9 +2,11 @@ import pygame
 from pygame.locals import *
 from vector import Vector2
 from constants import *
+from entity import Entity
 
-class Pacman(object):
+class Pacman(Entity):
     def __init__(self, node):
+        super().__init__(node)
         self.name = PACMAN
         self.directions = {STOP: Vector2(), UP: Vector2(0,-1), DOWN: Vector2(0,1),
                            LEFT: Vector2(-1,0), RIGHT: Vector2(1,0)}
@@ -86,12 +88,20 @@ class Pacman(object):
     
     def eat_pellets(self, pellet_list):
         for pellet in pellet_list:
-            d = self.position - pellet.position
-            d_squared = d.magnitude_squared()
-            r_squared = (pellet.radius + self.collide_radius) ** 2
-            if d_squared <= r_squared:
+           if self.collide_check(pellet):
                 return pellet
         return None
+    
+    def collide_ghost(self,ghost):
+        return self.collide_check(ghost)
+    
+    def collide_check(self, other):
+        d = self.position - other.position
+        d_squared = d.magnitude_squared()
+        r_squared = (self.collide_radius + other.collide_radius)
+        if d_squared <= r_squared:
+            return True
+        return False
     
     def render(self, screen):
         p = self.position.as_int()

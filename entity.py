@@ -21,6 +21,18 @@ class Entity(object):
         self.disable_portal = False
         self.goal = None
         self.direction_method = self.random_directions
+        self.set_start_node(node)
+        
+    def set_start_node(self, node):
+        self.node = node
+        self.start_node = node
+        self.target = node
+        self.set_position()
+        
+    def set_between_nodes(self, direction):
+        if self.node.neighbors[direction] is not None:
+            self.target = self.node.neighbors[direction]
+            self.position = (self.node.position + self.target.position) / 2.0
         
     def set_position(self):
         self.position = self.node.position.copy()

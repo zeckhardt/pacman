@@ -10,7 +10,7 @@ class Pacman(Entity):
         self.name = PACMAN
         self.directions = {STOP: Vector2(), UP: Vector2(0,-1), DOWN: Vector2(0,1),
                            LEFT: Vector2(-1,0), RIGHT: Vector2(1,0)}
-        self.direction = STOP
+        self.direction = LEFT
         self.speed = 100 * TILE_WIDTH / 16
         self.radius = 10
         self.color = YELLOW
@@ -18,6 +18,7 @@ class Pacman(Entity):
         self.set_position()
         self.target = node
         self.collide_radius = 5
+        self.set_between_nodes(LEFT)
         
     def set_position(self):
         self.position = self.node.position.copy()

@@ -23,6 +23,12 @@ class Entity(object):
         self.direction_method = self.random_directions
         self.set_start_node(node)
         
+    def reset(self):
+        self.set_start_node(self.start_node)
+        self.direction = STOP
+        self.speed = 100
+        self.visible = True
+        
     def set_start_node(self, node):
         self.node = node
         self.start_node = node
@@ -39,9 +45,10 @@ class Entity(object):
         
     def valid_direction(self, direction):
         if direction is not STOP:
-            if self.node.neighbors[direction] is not None:
-                return True
-            return False
+            if self.name is self.node.access[direction]:
+                if self.node.neighbors[direction] is not None:
+                    return True
+                return False
     
     def get_new_target(self, direction):
         if self.valid_direction(direction):

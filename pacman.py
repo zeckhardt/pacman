@@ -15,7 +15,7 @@ class Pacman(Entity):
         self.radius = 10
         self.color = YELLOW
         self.node = node
-        self.set_position()
+        #self.set_position()
         self.target = node
         self.collide_radius = 5
         self.set_between_nodes(LEFT)

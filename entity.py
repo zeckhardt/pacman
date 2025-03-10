@@ -14,9 +14,9 @@ class Entity(object):
         self.radius = 10
         self.collide_radius = 5
         self.color = WHITE
-        self.node = node
-        self.set_position()
-        self.target = node
+        #self.node = node
+        #self.set_position()
+       # self.target = node
         self.visible = True
         self.disable_portal = False
         self.goal = None

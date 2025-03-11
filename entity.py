@@ -45,7 +45,7 @@ class Entity(object):
         
     def valid_direction(self, direction):
         if direction is not STOP:
-            if self.name is self.node.access[direction]:
+            if self.name in self.node.access[direction]:
                 if self.node.neighbors[direction] is not None:
                     return True
                 return False

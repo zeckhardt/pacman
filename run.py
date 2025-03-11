@@ -64,7 +64,7 @@ class GameController(object):
         self.ghosts.blinky.set_start_node(self.nodes.get_node_from_tiles(2+11.5, 0+14))
         self.ghosts.pinky.set_start_node(self.nodes.get_node_from_tiles(2+11.5, 3+14))
         self.ghosts.inky.set_start_node(self.nodes.get_node_from_tiles(0+11.5, 3+14))
-        self.ghosts.clyde.set_start_node(self.nodes.get_node_from_tiles(4+11.5, 4+14))
+        self.ghosts.clyde.set_start_node(self.nodes.get_node_from_tiles(4+11.5, 3+14))
         self.ghosts.set_spawn_node(self.nodes.get_node_from_tiles(2+11.5, 3+14))
         self.nodes.deny_home_access(self.pacman)
         self.nodes.deny_home_access_list(self.ghosts)

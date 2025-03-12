@@ -9,17 +9,17 @@ class Pacman(Entity):
     def __init__(self, node):
         super().__init__(node)
         self.name = PACMAN
-        self.directions = {STOP: Vector2(), UP: Vector2(0,-1), DOWN: Vector2(0,1),
-                           LEFT: Vector2(-1,0), RIGHT: Vector2(1,0)}
-        self.direction = LEFT
+        self.directions = {STOP:Vector2(), UP:Vector2(0,-1), DOWN:Vector2(0,1), LEFT:Vector2(-1,0), RIGHT:Vector2(1,0)}
+        self.direction = STOP
         self.speed = 100 * TILE_WIDTH / 16
         self.radius = 10
         self.color = YELLOW
-        self.node = node
-        #self.set_position()
-        self.target = node
-        self.collide_radius = 5
+        self.direction = LEFT
         self.set_between_nodes(LEFT)
+        self.node = node
+        # self.setPosition()
+        self.target = node
+        self.collideRadius = 5
         self.alive = True
         self.sprites = PacmanSprites(self)
         
@@ -37,6 +37,7 @@ class Pacman(Entity):
         self.position = self.node.position.copy()
         
     def update(self, dt):
+        self.sprites.update(dt)	
         self.position += self.directions[self.direction] * self.speed * dt
         direction = self.get_valid_key()
         if self.overshot_target():
@@ -48,11 +49,10 @@ class Pacman(Entity):
                 self.direction = direction
             else:
                 self.target = self.get_new_target(self.direction)
-            
             if self.target is self.node:
                 self.direction = STOP
             self.set_position()
-        else:
+        else: 
             if self.opposite_direction(direction):
                 self.reverse_direction()
             
@@ -117,6 +117,3 @@ class Pacman(Entity):
             return True
         return False
     
-    def render(self, screen):
-        p = self.position.as_int()
-        pygame.draw.circle(screen, self.color, p, self.radius)

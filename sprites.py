@@ -108,13 +108,14 @@ class GhostSprites(Spritesheet):
         
         
 class FruitSprites(Spritesheet):
-    def __init__(self, entity):
+    def __init__(self, entity, level):
         super().__init__()
         self.entity = entity
-        self.entity.image = self.get_start_image()
+        self.fruits = {0:(16,8), 1:(18,8), 2:(20,8), 3:(16,10), 4:(18,10), 5:(20,10)}
+        self.entity.image = self.get_start_image(level % len(self.fruits))
         
-    def get_start_image(self):
-        return self.get_image(16, 8)
+    def get_start_image(self, key):
+        return self.get_image(*self.fruits[key])
     
     def get_image(self, x, y):
         return super().get_image(x, y, 2 * TILE_WIDTH, 2 * TILE_HEIGHT)

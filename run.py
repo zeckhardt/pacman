@@ -29,6 +29,7 @@ class GameController(object):
         self.flash_bg = False
         self.flash_time = 0.2
         self.flash_timer = 0
+        self.fruit_captured = []
         
     def next_level(self):
         self.show_entities()
@@ -48,6 +49,7 @@ class GameController(object):
         self.text_group.update_level(self.level)
         self.text_group.setup_text(READY_TXT)
         self.life_sprites.reset_lives(self.lives)
+        self.fruit_captured = []
         
     def reset_level(self):
         self.pause.paused = True
@@ -151,11 +153,18 @@ class GameController(object):
     def check_fruit_events(self):
         if self.pellets.num_eaten == 50 or self.pellets.num_eaten == 140:
             if self.fruit is None:
-                self.fruit = Fruit(self.nodes.get_node_from_tiles(9,20))
+                self.fruit = Fruit(self.nodes.get_node_from_tiles(9,20), self.level)
         if self.fruit is not None:
             if self.pacman.collide_check(self.fruit):
                 self.update_score(self.fruit.points)
                 self.text_group.add_text(str(self.fruit.points), WHITE, self.fruit.position.x, self.fruit.position.y, 8, time=1)
+                fruit_captured = False
+                for fruit in self.fruit_captured:
+                    if fruit.get_offset() == self.fruit.image.get_offset():
+                        fruit_captured = True
+                        break
+                if not fruit_captured:
+                    self.fruit_captured.append(self.fruit.image)
                 self.fruit = None
             elif self.fruit.destroy:
                 self.fruit = None
@@ -221,6 +230,11 @@ class GameController(object):
             x = self.life_sprites.images[i].get_width() * i
             y = SCREENHEIGHT - self.life_sprites.images[i].get_height()
             self.screen.blit(self.life_sprites.images[i], (x, y))
+            
+        for i in range(len(self.fruit_captured)):
+            x = SCREENWIDTH - self.fruit_captured[i].get_width() * (i+1)
+            y = SCREENHEIGHT - self.fruit_captured[i].get_height()
+            self.screen.blit(self.fruit_captured[i], (x,y))
         pygame.display.update()
 
 

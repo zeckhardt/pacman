@@ -10,6 +10,7 @@ from pauser import Pause
 from text import TextGroup
 from sprites import LifeSprites
 from sprites import MazeSprites
+from mazedata import MazeData
 
 class GameController(object):
     def __init__(self):
@@ -30,6 +31,7 @@ class GameController(object):
         self.flash_time = 0.2
         self.flash_timer = 0
         self.fruit_captured = []
+        self.maze_data = MazeData()
         
     def next_level(self):
         self.show_entities()
@@ -69,31 +71,25 @@ class GameController(object):
         self.background = self.background_norm
         
     def start_game(self):
-        self.maze_sprites = MazeSprites("maze1.txt", "maze1_rotation.txt")
+        self.maze_data.load_maze(self.level)
+        self.maze_sprites = MazeSprites(self.maze_data.obj.name+".txt", self.maze_data.obj.name+"_rotation.txt")
         self.set_background()
-        self.nodes = NodeGroup("maze1.txt")
-        self.nodes.set_portal_pair((0,17), (27,17))
-        homekey = self.nodes.create_home_nodes(11.5, 14)
-        self.nodes.connect_home_nodes(homekey, (12,14), LEFT)
-        self.nodes.connect_home_nodes(homekey, (15,14), RIGHT)
-        self.pacman = Pacman(self.nodes.get_node_from_tiles(15, 26))
-        self.pellets = PelletGroup("maze1.txt")
+        self.nodes = NodeGroup(self.maze_data.obj.name+".txt")
+        self.maze_data.obj.set_portal_pairs(self.nodes)
+        self.maze_data.obj.connect_home_nodes(self.nodes)
+        self.pacman = Pacman(self.nodes.get_node_from_tiles(*self.maze_data.obj.pacman_start))
+        self.pellets = PelletGroup(self.maze_data.obj.name+".txt")
         self.ghosts = GhostGroup(self.nodes.get_start_node_temp(), self.pacman)
-        self.ghosts.blinky.set_start_node(self.nodes.get_node_from_tiles(2+11.5, 0+14))
-        self.ghosts.pinky.set_start_node(self.nodes.get_node_from_tiles(2+11.5, 3+14))
-        self.ghosts.inky.set_start_node(self.nodes.get_node_from_tiles(0+11.5, 3+14))
-        self.ghosts.clyde.set_start_node(self.nodes.get_node_from_tiles(4+11.5, 3+14))
-        self.ghosts.set_spawn_node(self.nodes.get_node_from_tiles(2+11.5, 3+14))
+        self.ghosts.pinky.set_start_node(self.nodes.get_node_from_tiles(*self.maze_data.obj.add_offset(2, 3)))
+        self.ghosts.inky.set_start_node(self.nodes.get_node_from_tiles(*self.maze_data.obj.add_offset(0, 3)))
+        self.ghosts.clyde.set_start_node(self.nodes.get_node_from_tiles(*self.maze_data.obj.add_offset(4, 3)))
+        self.ghosts.set_spawn_node(self.nodes.get_node_from_tiles(*self.maze_data.obj.add_offset(2, 3)))
+        self.ghosts.blinky.set_start_node(self.nodes.get_node_from_tiles(*self.maze_data.obj.add_offset(2, 0)))
         self.nodes.deny_home_access(self.pacman)
         self.nodes.deny_home_access_list(self.ghosts)
-        self.nodes.deny_access_list(2+11.5, 3+14, LEFT, self.ghosts)
-        self.nodes.deny_access_list(2+11.5, 3+14, RIGHT, self.ghosts)
         self.ghosts.inky.start_node.deny_access(RIGHT, self.ghosts.inky)
         self.ghosts.clyde.start_node.deny_access(LEFT, self.ghosts.clyde)
-        self.nodes.deny_access_list(12, 14, UP, self.ghosts)
-        self.nodes.deny_access_list(15, 14, UP, self.ghosts)
-        self.nodes.deny_access_list(12, 26, UP, self.ghosts)
-        self.nodes.deny_access_list(15, 26, UP, self.ghosts)
+        self.maze_data.obj.deny_ghosts_access(self.ghosts, self.nodes)
     
     def update(self):
         # amount of time since last update() call

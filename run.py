@@ -16,6 +16,8 @@ class GameController(object):
         pygame.init()
         self.screen = pygame.display.set_mode(SCREENSIZE, 0, 32)
         self.background = None
+        self.background_norm = None
+        self.background_flash = None
         self.clock = pygame.time.Clock()
         self.fruit = None
         self.pause = Pause(True)
@@ -24,6 +26,9 @@ class GameController(object):
         self.score = 0
         self.text_group = TextGroup()
         self.life_sprites = LifeSprites(self.lives)
+        self.flash_bg = False
+        self.flash_time = 0.2
+        self.flash_timer = 0
         
     def next_level(self):
         self.show_entities()
@@ -52,13 +57,18 @@ class GameController(object):
         self.text_group.show_text(READY_TXT)
 
     def set_background(self):
-        self.background = pygame.surface.Surface(SCREENSIZE).convert()
-        self.background.fill(BLACK)
+        self.background_norm = pygame.surface.Surface(SCREENSIZE).convert()
+        self.background_norm.fill(BLACK)
+        self.background_flash = pygame.surface.Surface(SCREENSIZE).convert()
+        self.background_flash.fill(BLACK)
+        self.background_norm = self.maze_sprites.construct_background(self.background_norm, self.level%5)
+        self.background_flash = self.maze_sprites.construct_background(self.background_flash, 5)
+        self.flashBG = False
+        self.background = self.background_norm
         
     def start_game(self):
-        self.set_background()
         self.maze_sprites = MazeSprites("maze1.txt", "maze1_rotation.txt")
-        self.set_background = self.maze_sprites.construct_background(self.background, self.level % 5)
+        self.set_background()
         self.nodes = NodeGroup("maze1.txt")
         self.nodes.set_portal_pair((0,17), (27,17))
         homekey = self.nodes.create_home_nodes(11.5, 14)
@@ -89,13 +99,28 @@ class GameController(object):
         self.text_group.update(dt)
         self.pellets.update(dt)
         if not self.pause.paused:
-            self.pacman.update(dt)
             self.ghosts.update(dt)
             if self.fruit is not None:
                 self.fruit.update(dt)
             self.check_pellet_events()
             self.check_ghost_events()
             self.check_fruit_events()
+            
+        if self.pacman.alive:
+            if not self.pause.paused:
+                self.pacman.update(dt)
+        else:
+            self.pacman.update(dt)
+            
+        if self.flash_bg:
+            self.flash_timer += dt
+            if self.flash_timer >= self.flash_time:
+                self.flash_timer = 0
+                if self.background == self.background_norm:
+                    self.background = self.background_flash
+                else:
+                    self.background = self.background_norm
+            
         after_pause_method = self.pause.update(dt)
         if after_pause_method is not None:
             after_pause_method()
@@ -172,6 +197,7 @@ class GameController(object):
             if pellet.name == POWER_PELLET:
                 self.ghosts.start_freight()
             if self.pellets.is_empty():
+                self.flash_bg = True
                 self.hide_entities()
                 self.pause.set_pause(pause_time=3, func=self.next_level)
                 

@@ -8,15 +8,16 @@ class Pellet(object):
         self.name = PELLET
         self.position = Vector2(column * TILE_WIDTH, row * TILE_HEIGHT)
         self.color = WHITE
-        self.radius = int(4 * TILE_WIDTH / 16)
-        self.collide_radius = int(4 * TILE_WIDTH / 16)
+        self.radius = int(2 * TILE_WIDTH / 16)
+        self.collide_radius = int(2 * TILE_WIDTH / 16)
         self.points = 10
         self.visible = True
         
     def render(self, screen):
         if self.visible:
-            p = self.position.as_int()
-            pygame.draw.circle(screen, self.color, p, self.radius)
+            adjust = Vector2(TILE_WIDTH, TILE_HEIGHT) / 2
+            p = self.position + adjust
+            pygame.draw.circle(screen, self.color, p.as_int(), self.radius)
             
             
 class PowerPellet(Pellet):

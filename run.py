@@ -8,6 +8,8 @@ from ghosts import GhostGroup
 from fruit import Fruit
 from pauser import Pause
 from text import TextGroup
+from sprites import LifeSprites
+from sprites import MazeSprites
 
 class GameController(object):
     def __init__(self):
@@ -21,6 +23,7 @@ class GameController(object):
         self.lives = 5
         self.score = 0
         self.text_group = TextGroup()
+        self.life_sprites = LifeSprites(self.lives)
         
     def next_level(self):
         self.show_entities()
@@ -39,6 +42,7 @@ class GameController(object):
         self.text_group.update_score(self.score)
         self.text_group.update_level(self.level)
         self.text_group.setup_text(READY_TXT)
+        self.life_sprites.reset_lives(self.lives)
         
     def reset_level(self):
         self.pause.paused = True
@@ -53,6 +57,8 @@ class GameController(object):
         
     def start_game(self):
         self.set_background()
+        self.maze_sprites = MazeSprites("maze1.txt", "maze1_rotation.txt")
+        self.set_background = self.maze_sprites.construct_background(self.background, self.level % 5)
         self.nodes = NodeGroup("maze1.txt")
         self.nodes.set_portal_pair((0,17), (27,17))
         homekey = self.nodes.create_home_nodes(11.5, 14)
@@ -144,6 +150,7 @@ class GameController(object):
                 elif ghost.mode.current is not SPAWN:
                     if self.pacman.alive:
                         self.lives -= 1
+                        self.life_sprites.remove_image()
                         self.pacman.die()
                         self.ghosts.hide()
                         if self.lives <= 0:
@@ -178,13 +185,16 @@ class GameController(object):
 
     def render(self):
         self.screen.blit(self.background, (0,0))
-        self.nodes.render(self.screen)
         self.pellets.render(self.screen)
         if self.fruit is not None:
             self.fruit.render(self.screen)
         self.pacman.render(self.screen)
         self.ghosts.render(self.screen)
         self.text_group.render(self.screen)
+        for i in range(len(self.life_sprites.images)):
+            x = self.life_sprites.images[i].get_width() * i
+            y = SCREENHEIGHT - self.life_sprites.images[i].get_height()
+            self.screen.blit(self.life_sprites.images[i], (x, y))
         pygame.display.update()
 
 

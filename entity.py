@@ -22,6 +22,7 @@ class Entity(object):
         self.goal = None
         self.direction_method = self.random_directions
         self.set_start_node(node)
+        self.image = None
         
     def reset(self):
         self.set_start_node(self.start_node)
@@ -81,8 +82,13 @@ class Entity(object):
         
     def render(self, screen):
         if self.visible:
-            p = self.position.as_int()
-            pygame.draw.circle(screen, self.color, p, self.radius)
+            if self.image is not None:
+                adjust = Vector2(TILE_WIDTH, TILE_HEIGHT) / 2
+                p = self.position - adjust
+                screen.blit(self.image, p.as_tuple())
+            else:   
+                p = self.position.as_int()
+                pygame.draw.circle(screen, self.color, p, self.radius)
     
     def update(self, dt):
         self.position += self.directions[self.direction] * self.speed * dt

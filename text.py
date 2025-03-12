@@ -59,6 +59,9 @@ class TextGroup(object):
         self.all_text[self.next_id] = Text(text, color, x, y, size, time=time, id=id)
         return self.next_id
     
+    def remove_text(self, id):
+        self.all_text.pop(id)
+    
     
     def setup_text(self):
         size = TILE_HEIGHT
